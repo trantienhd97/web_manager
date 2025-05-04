@@ -8,6 +8,43 @@ from datetime import datetime, timedelta
 # Create a blueprint for dashboard routes
 dashboard_bp = Blueprint('dashboard', __name__)
 
+# Get daily statistics with product and order counts for the dashboard
+@dashboard_bp.route('/api/dashboard/daily-stats', methods=['GET', 'OPTIONS'])
+def get_daily_dashboard_stats():
+    if request.method == 'OPTIONS':
+        return '', 200
+        
+    # Calculate today's date
+    today = datetime.utcnow().date()
+    
+    # Get today's orders count
+    daily_orders = db.session.query(func.count(Order.id)).filter(
+        func.date(Order.created_at) == today
+    ).scalar() or 0
+    
+    # Get total orders count
+    total_orders = db.session.query(func.count(Order.id)).scalar() or 0
+    
+    # Count products sold today (from order items)
+    today_orders = Order.query.filter(
+        func.date(Order.created_at) == today
+    ).all()
+    
+    sold_products = 0
+    for order in today_orders:
+        for item in order.items:
+            sold_products += item.quantity
+    
+    # Get total products count
+    total_products = db.session.query(func.count(Product.id)).scalar() or 0
+    
+    return jsonify({
+        'soldProducts': sold_products,
+        'totalProducts': total_products,
+        'dailyOrders': daily_orders,
+        'totalOrders': total_orders
+    })
+
 # Get daily statistics
 @dashboard_bp.route('/api/dashboard/daily', methods=['GET', 'OPTIONS'])
 def get_daily_stats():

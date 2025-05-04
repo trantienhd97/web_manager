@@ -1,43 +1,32 @@
-import React, { useEffect, useState } from 'react';
-import { fetchQuarterlyStats } from '../../services/api';
+import React from 'react';
 
-const QuarterlyStats = () => {
-    const [stats, setStats] = useState(null);
-    const [loading, setLoading] = useState(true);
-    const [error, setError] = useState(null);
-
-    useEffect(() => {
-        const getStats = async () => {
-            try {
-                const data = await fetchQuarterlyStats();
-                setStats(data);
-            } catch (err) {
-                setError(err.message);
-            } finally {
-                setLoading(false);
-            }
-        };
-
-        getStats();
-    }, []);
-
-    if (loading) return <div>Loading...</div>;
-    if (error) return <div>Error: {error}</div>;
+const QuarterlyStats = ({ stats }) => {
+    // Check if stats are available
+    if (!stats) return <div className="stats-card">No quarterly data available</div>;
 
     return (
-        <div>
+        <div className="stats-card quarterly-stats">
             <h2>Quarterly Statistics</h2>
-            {stats ? (
-                <ul>
-                    {stats.map((stat, index) => (
-                        <li key={index}>
-                            <strong>Quarter:</strong> {stat.quarter} - <strong>Sales:</strong> ${stat.sales}
-                        </li>
-                    ))}
-                </ul>
-            ) : (
-                <div>No data available</div>
-            )}
+            <div className="stat-items-container">
+                <div className="stat-item">
+                    <h3>Quarter</h3>
+                    <p className="stat-value">{stats.quarter || 'N/A'}</p>
+                </div>
+                <div className="stat-item">
+                    <h3>Orders Count</h3>
+                    <p className="stat-value">{stats.orders_count || 0}</p>
+                </div>
+                <div className="stat-item">
+                    <h3>Total Sales</h3>
+                    <p className="stat-value">${stats.total_sales?.toFixed(2) || 0}</p>
+                </div>
+                {stats.category_distribution && stats.category_distribution.length > 0 && (
+                    <div className="stat-item category-distribution">
+                        <h3>Top Category</h3>
+                        <p className="stat-value">{stats.category_distribution[0]?.name || 'N/A'}</p>
+                    </div>
+                )}
+            </div>
         </div>
     );
 };

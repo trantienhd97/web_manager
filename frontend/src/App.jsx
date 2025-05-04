@@ -1,15 +1,15 @@
 import React, { useEffect, useState } from 'react';
-import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
+import { BrowserRouter as Router, Route, Routes, Navigate } from 'react-router-dom';
 import { initApi } from './services/api';
 import Header from './components/common/Header';
 import Footer from './components/common/Footer';
 import Sidebar from './components/common/Sidebar';
-import DashboardPage from './components/dashboard/DashboardPage';
 import ProductList from './components/products/ProductList';
 import ProductForm from './components/products/ProductForm';
 import ProductSearch from './components/products/ProductSearch';
 import OrderList from './components/orders/OrderList';
 import OrderForm from './components/orders/OrderForm';
+import DashboardPage from './components/dashboard/DashboardPage';
 import ErrorDisplay from './components/common/ErrorDisplay';
 import './index.css';
 
@@ -26,9 +26,9 @@ const App = () => {
             'X-Requested-With': 'XMLHttpRequest',
             'X-Skip-Auth': 'true',
             'X-No-Auth': 'true',
-            'Authorization': 'Bearer bypass', // Added Bearer prefix
+            'Authorization': 'Bearer bypass', 
             'X-Bypass-Permission': 'true',
-            'Access-Control-Allow-Origin': '*' // CORS header
+            'Access-Control-Allow-Origin': '*'
           }
         });
         setApiStatus({ isLoading: false, error: null });
@@ -48,28 +48,39 @@ const App = () => {
   }, []);
 
   if (apiStatus.isLoading) {
-    return <div className="loading">Connecting to backend services...</div>;
+    return (
+      <div className="app-loading">
+        <div className="loading-spinner"></div>
+        <p className="loading-text">Connecting to backend services...</p>
+      </div>
+    );
   }
 
   if (apiStatus.error) {
-    return <ErrorDisplay message={apiStatus.error} />;
+    return <ErrorDisplay message={apiStatus.error} retry={() => window.location.reload()} />;
   }
 
   return (
     <Router>
-      <Header />
-      <Sidebar />
-      <main>
-        <Routes>
-          <Route path="/" element={<ProductList />} />
-          <Route path="/products" element={<ProductList />} />
-          <Route path="/products/new" element={<ProductForm />} />
-          <Route path="/products/search" element={<ProductSearch />} />
-          <Route path="/orders" element={<OrderList />} />
-          <Route path="/orders/new" element={<OrderForm />} />
-        </Routes>
-      </main>
-      <Footer />
+      <div className="app-container">
+        <Header />
+        <div className="main-layout">
+          <Sidebar />
+          <main>
+            <Routes>
+              <Route path="/" element={<DashboardPage />} />
+              <Route path="/products" element={<ProductList />} />
+              <Route path="/products/new" element={<ProductForm />} />
+              <Route path="/products/search" element={<ProductSearch />} />
+              <Route path="/orders" element={<OrderList />} />
+              <Route path="/orders/new" element={<OrderForm />} />
+              {/* Thêm route fallback để xử lý URL không hợp lệ */}
+              <Route path="*" element={<Navigate to="/" replace />} />
+            </Routes>
+          </main>
+        </div>
+        <Footer />
+      </div>
     </Router>
   );
 };

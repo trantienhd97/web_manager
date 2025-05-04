@@ -1,50 +1,34 @@
-import React, { useEffect, useState } from 'react';
-import { fetchYearlyStats } from '../../services/api';
+import React from 'react';
 
-const YearlyStats = () => {
-    const [stats, setStats] = useState([]);
-    const [loading, setLoading] = useState(true);
-    const [error, setError] = useState(null);
-
-    useEffect(() => {
-        const getYearlyStats = async () => {
-            try {
-                const data = await fetchYearlyStats();
-                setStats(data);
-            } catch (err) {
-                setError(err.message);
-            } finally {
-                setLoading(false);
-            }
-        };
-
-        getYearlyStats();
-    }, []);
-
-    if (loading) return <div>Loading...</div>;
-    if (error) return <div>Error: {error}</div>;
+const YearlyStats = ({ stats }) => {
+    // Check if stats are available
+    if (!stats) return <div className="stats-card">No yearly data available</div>;
 
     return (
-        <div>
+        <div className="stats-card yearly-stats">
             <h2>Yearly Statistics</h2>
-            <table>
-                <thead>
-                    <tr>
-                        <th>Year</th>
-                        <th>Total Sales</th>
-                        <th>Total Orders</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {stats.map((stat) => (
-                        <tr key={stat.year}>
-                            <td>{stat.year}</td>
-                            <td>{stat.totalSales}</td>
-                            <td>{stat.totalOrders}</td>
-                        </tr>
-                    ))}
-                </tbody>
-            </table>
+            <div className="stat-items-container">
+                <div className="stat-item">
+                    <h3>Year</h3>
+                    <p className="stat-value">{stats.year || 'N/A'}</p>
+                </div>
+                <div className="stat-item">
+                    <h3>Total Orders</h3>
+                    <p className="stat-value">{stats.total_orders || 0}</p>
+                </div>
+                <div className="stat-item">
+                    <h3>Total Sales</h3>
+                    <p className="stat-value">${stats.total_sales?.toFixed(2) || 0}</p>
+                </div>
+                {stats.monthly_breakdown && stats.monthly_breakdown.length > 0 && (
+                    <div className="stat-item">
+                        <h3>Best Month</h3>
+                        <p className="stat-value">
+                            {stats.monthly_breakdown.sort((a, b) => b.sales - a.sales)[0]?.month.split('-')[1] || 'N/A'}
+                        </p>
+                    </div>
+                )}
+            </div>
         </div>
     );
 };

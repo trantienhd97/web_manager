@@ -1,41 +1,42 @@
-import React, { useEffect, useState } from 'react';
-import { fetchDailyStats } from '../../services/api';
+import React from 'react';
 
-const DailyStats = () => {
-    const [stats, setStats] = useState(null);
-    const [loading, setLoading] = useState(true);
-    const [error, setError] = useState(null);
-
-    useEffect(() => {
-        const getStats = async () => {
-            try {
-                const data = await fetchDailyStats();
-                setStats(data);
-            } catch (err) {
-                setError(err.message);
-            } finally {
-                setLoading(false);
-            }
-        };
-
-        getStats();
-    }, []);
-
-    if (loading) return <div>Loading...</div>;
-    if (error) return <div>Error: {error}</div>;
+const DailyStats = ({ stats }) => {
+    // Check if stats are available
+    if (!stats) return <div className="stats-card">No daily data available</div>;
 
     return (
-        <div>
-            <h2>Daily Statistics</h2>
-            {stats ? (
-                <ul>
-                    <li>Total Sales: {stats.totalSales}</li>
-                    <li>Total Orders: {stats.totalOrders}</li>
-                    <li>New Customers: {stats.newCustomers}</li>
-                </ul>
-            ) : (
-                <div>No data available</div>
-            )}
+        <div className="stats-card daily-stats">
+            <h2>Daily Sales Report</h2>
+            <div className="stat-items-container">
+                <div className="stat-item">
+                    <h3>Products Sold</h3>
+                    <p className="stat-value">{stats.soldProducts || 0}</p>
+                </div>
+                <div className="stat-item">
+                    <h3>Total Products</h3>
+                    <p className="stat-value">{stats.totalProducts || 0}</p>
+                </div>
+                <div className="stat-item">
+                    <h3>Daily Orders</h3>
+                    <p className="stat-value">{stats.dailyOrders || 0}</p>
+                </div>
+                <div className="stat-item">
+                    <h3>Total Orders</h3>
+                    <p className="stat-value">{stats.totalOrders || 0}</p>
+                </div>
+                {stats.totalSales !== undefined && (
+                    <div className="stat-item">
+                        <h3>Total Sales</h3>
+                        <p className="stat-value">${stats.totalSales?.toFixed(2) || 0}</p>
+                    </div>
+                )}
+                {stats.newCustomers !== undefined && (
+                    <div className="stat-item">
+                        <h3>New Customers</h3>
+                        <p className="stat-value">{stats.newCustomers || 0}</p>
+                    </div>
+                )}
+            </div>
         </div>
     );
 };

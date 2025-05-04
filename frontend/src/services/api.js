@@ -192,7 +192,7 @@ export const searchProducts = async (query) => {
 // Dashboard API functions
 export const fetchDailyStats = async () => {
     try {
-        const response = await api.get('/dashboard/daily');
+        const response = await api.get('/dashboard/daily-stats');
         return response.data;
     } catch (error) {
         console.error('Error fetching daily stats:', error);

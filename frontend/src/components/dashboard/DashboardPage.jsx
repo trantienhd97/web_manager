@@ -5,22 +5,48 @@ import QuarterlyStats from './QuarterlyStats';
 import YearlyStats from './YearlyStats';
 import { Link } from 'react-router-dom';
 import './DashboardPage.css';
+import { fetchDailyStats, fetchMonthlyStats, fetchQuarterlyStats, fetchYearlyStats } from '../../services/api';
 
 const DashboardPage = () => {
-    const [isLoading, setIsLoading] = useState(true);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState(null);
+    const [dailyStats, setDailyStats] = useState({
+        soldProducts: 0,
+        totalProducts: 0,
+        dailyOrders: 0,
+        totalOrders: 0
+    });
+    const [monthlyStats, setMonthlyStats] = useState(null);
+    const [quarterlyStats, setQuarterlyStats] = useState(null);
+    const [yearlyStats, setYearlyStats] = useState(null);
 
-    // useEffect(() => {
-    //     // Simulate loading data
-    //     const timer = setTimeout(() => {
-    //         setIsLoading(false);
-    //     }, 1000);
-        
-    //     return () => clearTimeout(timer);
-    // }, []);
+    useEffect(() => {
+        const fetchAllStats = async () => {
+            setLoading(true);
+            setError(null);
+            try {
+                // Fetch all stats in parallel
+                const [daily, monthly, quarterly, yearly] = await Promise.all([
+                    fetchDailyStats(),
+                    fetchMonthlyStats(),
+                    fetchQuarterlyStats(),
+                    fetchYearlyStats()
+                ]);
+                
+                setDailyStats(daily);
+                setMonthlyStats(monthly);
+                setQuarterlyStats(quarterly);
+                setYearlyStats(yearly);
+            } catch (error) {
+                console.error('Error fetching statistics:', error);
+                setError('Failed to load dashboard data. Please try again later.');
+            } finally {
+                setLoading(false);
+            }
+        };
 
-    // if (isLoading) {
-    //     return <div className="dashboard-loading">Loading dashboard data...</div>;
-    // }
+        fetchAllStats();
+    }, []);
 
     return (
         <div className="dashboard-container">
@@ -51,20 +77,18 @@ const DashboardPage = () => {
                 </div>
             </div>
             
-            <div className="stats-grid">
-                <div className="stats-card">
-                    <DailyStats />
+            {loading ? (
+                <div className="loading-message">Loading dashboard data...</div>
+            ) : error ? (
+                <div className="error-message">{error}</div>
+            ) : (
+                <div className="stats-grid">
+                    <DailyStats stats={dailyStats} />
+                    <MonthlyStats stats={monthlyStats} />
+                    <QuarterlyStats stats={quarterlyStats} />
+                    <YearlyStats stats={yearlyStats} />
                 </div>
-                <div className="stats-card">
-                    <MonthlyStats />
-                </div>
-                <div className="stats-card">
-                    <QuarterlyStats />
-                </div>
-                <div className="stats-card">
-                    <YearlyStats />
-                </div>
-            </div>
+            )}
         </div>
     );
 };
