@@ -1,0 +1,27 @@
+version: '3.8'
+
+services:
+  webstore-api:
+    build:
+      context: ./backend/WebStore.API
+      dockerfile: Dockerfile
+    ports:
+      - "5000:80"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ConnectionStrings__DefaultConnection=Server=db;Database=WebStoreDb;User=sa;Password=Your_password123;TrustServerCertificate=True;
+    depends_on:
+      - db
+
+  db:
+    image: mcr.microsoft.com/mssql/server
+    ports:
+      - "1433:1433"
+    environment:
+      - SA_PASSWORD=Your_password123
+      - ACCEPT_EULA=Y
+    volumes:
+      - dbdata:/var/opt/mssql
+
+volumes:
+  dbdata:
