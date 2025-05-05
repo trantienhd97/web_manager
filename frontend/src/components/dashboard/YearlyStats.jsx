@@ -5,7 +5,7 @@ const YearlyStats = ({ stats }) => {
     if (!stats) return <div className="stats-card">No yearly data available</div>;
 
     return (
-        <div className="stats-card yearly-stats">
+        <div className="stats-card yearly-stats"  style={{ width: 'fit-content' }}>
             <h2>Yearly Statistics</h2>
             <div className="stat-items-container">
                 <div className="stat-item">

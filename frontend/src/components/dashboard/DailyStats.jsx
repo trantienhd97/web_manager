@@ -5,7 +5,7 @@ const DailyStats = ({ stats }) => {
     if (!stats) return <div className="stats-card">No daily data available</div>;
 
     return (
-        <div className="stats-card daily-stats">
+        <div className="stats-card daily-stats" style={{ width: 'fit-content' }}>
             <h2>Daily Sales Report</h2>
             <div className="stat-items-container">
                 <div className="stat-item">

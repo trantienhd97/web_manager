@@ -5,7 +5,7 @@ const MonthlyStats = ({ stats }) => {
     if (!stats) return <div className="stats-card">No monthly data available</div>;
 
     return (
-        <div className="stats-card monthly-stats">
+        <div className="stats-card monthly-stats"  style={{ width: 'fit-content' }}>
             <h2>Monthly Statistics</h2>
             <div className="stat-items-container">
                 <div className="stat-item">

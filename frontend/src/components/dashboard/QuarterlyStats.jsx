@@ -5,7 +5,7 @@ const QuarterlyStats = ({ stats }) => {
     if (!stats) return <div className="stats-card">No quarterly data available</div>;
 
     return (
-        <div className="stats-card quarterly-stats">
+        <div className="stats-card quarterly-stats"  style={{ width: 'fit-content' }}>
             <h2>Quarterly Statistics</h2>
             <div className="stat-items-container">
                 <div className="stat-item">
