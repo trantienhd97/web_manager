@@ -3,7 +3,6 @@ import { BrowserRouter as Router, Route, Routes, Navigate } from 'react-router-d
 import { initApi } from './services/api';
 import Header from './components/common/Header';
 import Footer from './components/common/Footer';
-import Sidebar from './components/common/Sidebar';
 import ProductList from './components/products/ProductList';
 import ProductForm from './components/products/ProductForm';
 import ProductSearch from './components/products/ProductSearch';
@@ -65,7 +64,6 @@ const App = () => {
       <div className="app-container">
         <Header />
         <div className="main-layout">
-          <Sidebar />
           <main>
             <Routes>
               <Route path="/" element={<DashboardPage />} />
